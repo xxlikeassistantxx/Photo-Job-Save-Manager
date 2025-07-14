@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Photo_Job_Save_Manager.ViewModels"
+             xmlns:converters="clr-namespace:Photo_Job_Save_Manager.Converters"
+             x:Class="Photo_Job_Save_Manager.Views.JobTypeParameterPage"
+             x:Name="RootPage"
+             Title="New Job Type">
+    <ContentPage.Resources>
+        <converters:FieldTypeToBoolConverter x:Key="FieldTypeToBoolConverter" />
+    </ContentPage.Resources>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Back" Priority="0" Order="Primary" Clicked="OnBackClicked" />
+    </ContentPage.ToolbarItems>
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <Label Text="Job Type Name" FontAttributes="Bold" />
+            <Entry Placeholder="Enter job type name" Text="{Binding JobTypeName}" />
+
+            <Label Text="Fields (Parameters)" FontAttributes="Bold" />
+            <CollectionView ItemsSource="{Binding Fields}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <VerticalStackLayout Spacing="10" Padding="10" BackgroundColor="LightGray">
+                            <HorizontalStackLayout Spacing="10">
+                                <Entry Placeholder="Field name" Text="{Binding Name}" WidthRequest="150" />
+                                <CheckBox IsChecked="{Binding IsRequired}" />
+                                <Label Text="Required" />
+                                <Picker ItemsSource="{Binding Source={x:Reference RootPage}, Path=BindingContext.AvailableFieldTypes}"
+                                        SelectedItem="{Binding FieldType}" WidthRequest="100" />
+                                <Button Text="Remove"
+                                        Command="{Binding BindingContext.RemoveFieldCommand, Source={x:Reference RootPage}}"
+                                        CommandParameter="{Binding .}" />
+                            </HorizontalStackLayout>
+
+                            <!-- Allowed Values for Dropdown Fields -->
+                            <VerticalStackLayout IsVisible="{Binding FieldType, Converter={StaticResource FieldTypeToBoolConverter}, ConverterParameter=Dropdown}" Spacing="5">
+                                <Label Text="Allowed Values (required):" FontAttributes="Bold" />
+                                <HorizontalStackLayout Spacing="10">
+                                    <Entry x:Name="NewValueEntry" Placeholder="Add new value" WidthRequest="200" />
+                                    <Button Text="Add Value"
+                                            Clicked="OnAddAllowedValueClicked"
+                                            CommandParameter="{Binding .}" />
+                                </HorizontalStackLayout>
+                                <CollectionView ItemsSource="{Binding AllowedValues}" HeightRequest="100">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <HorizontalStackLayout Spacing="10">
+                                                <Label Text="{Binding .}" VerticalOptions="Center" />
+                                                <Button Text="Remove"
+                                                        Clicked="OnRemoveAllowedValueClicked"
+                                                        CommandParameter="{Binding .}" />
+                                            </HorizontalStackLayout>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Button Text="Add Field" Command="{Binding AddFieldCommand}" />
+            <Button Text="Save Job Type" Command="{Binding SaveCommand}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage> 

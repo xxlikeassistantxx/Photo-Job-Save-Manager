@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:Photo_Job_Save_Manager.Converters"
+             x:Class="Photo_Job_Save_Manager.Views.AddJobPage"
+             x:Name="RootPage"
+             Title="Add Job">
+    <ContentPage.Resources>
+        <converters:FieldTypeToBoolConverter x:Key="FieldTypeToBoolConverter" />
+        <converters:NullToBoolConverter x:Key="NullToBoolConverter" />
+    </ContentPage.Resources>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Back" Priority="0" Order="Primary" Clicked="OnBackClicked" />
+    </ContentPage.ToolbarItems>
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <Label Text="{Binding JobTypeName}" FontAttributes="Bold" FontSize="24" />
+            <CollectionView ItemsSource="{Binding FieldEntries}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="{Binding Field.Name}" FontAttributes="Bold" />
+                            <StackLayout>
+                                <!-- Text Field -->
+                                <Entry Placeholder="Enter value"
+                                       Text="{Binding Value}"
+                                       IsVisible="{Binding Field.FieldType, Converter={StaticResource FieldTypeToBoolConverter}, ConverterParameter=Text}" />
+                                
+                                <!-- Dropdown Field -->
+                                <Picker ItemsSource="{Binding Field.AllowedValues}"
+                                        SelectedItem="{Binding SelectedValue}"
+                                        Title="Select a value"
+                                        IsVisible="{Binding Field.FieldType, Converter={StaticResource FieldTypeToBoolConverter}, ConverterParameter=Dropdown}" />
+                                
+                                <!-- Photo Fields -->
+                                <Button Text="Pick Photo"
+                                        Command="{Binding PickPhotoCommand}"
+                                        IsVisible="{Binding Field.FieldType, Converter={StaticResource FieldTypeToBoolConverter}, ConverterParameter=Photo}" />
+                                <Button Text="Take Photo"
+                                        Command="{Binding TakePhotoCommand}"
+                                        IsVisible="{Binding Field.FieldType, Converter={StaticResource FieldTypeToBoolConverter}, ConverterParameter=Photo}" />
+                                <CollectionView ItemsSource="{Binding PhotoFilePaths}" ItemsLayout="HorizontalList" HeightRequest="80" SelectionMode="None" Margin="0,5,0,5">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Image Source="{Binding .}" HeightRequest="80" WidthRequest="80">
+                                                    <Image.GestureRecognizers>
+                                                        <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=ShowPhotoCommand}" CommandParameter="{Binding .}" />
+                                                    </Image.GestureRecognizers>
+                                                </Image>
+                                                <Button Text="X" WidthRequest="24" HeightRequest="24" BackgroundColor="Red" TextColor="White" CornerRadius="12" HorizontalOptions="End" VerticalOptions="Start" Padding="0" Command="{Binding RemovePhotoCommand}" CommandParameter="{Binding .}" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                </CollectionView>
+                            </StackLayout>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <Button Text="Save Job" Command="{Binding SaveCommand}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage> 

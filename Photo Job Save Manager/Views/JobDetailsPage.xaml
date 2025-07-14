@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Photo_Job_Save_Manager.Views.JobDetailsPage"
+             x:Name="RootPage"
+             Title="Job Details">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+            <Label Text="Job Details" FontSize="32" FontAttributes="Bold" />
+            <Label Text="{Binding Job.JobTypeId}" FontAttributes="Bold" FontSize="20" />
+            <Label Text="{Binding Job.CreatedAt, StringFormat='Created: {0:yyyy-MM-dd HH:mm}'}" FontSize="14" />
+            <StackLayout>
+                <Label Text="Fields:" FontAttributes="Bold" FontSize="16" />
+                <CollectionView ItemsSource="{Binding Fields}" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <StackLayout>
+                                <Label Text="{Binding Name}" FontAttributes="Bold" />
+                                <StackLayout>
+                                    <StackLayout.Triggers>
+                                        <DataTrigger TargetType="StackLayout" Binding="{Binding FieldType}" Value="Text">
+                                            <Setter Property="IsVisible" Value="True" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="StackLayout" Binding="{Binding FieldType}" Value="Photo">
+                                            <Setter Property="IsVisible" Value="False" />
+                                        </DataTrigger>
+                                    </StackLayout.Triggers>
+                                    <Label Text="{Binding TextValue}" />
+                                </StackLayout>
+                                <CollectionView ItemsSource="{Binding PhotoPaths}" ItemsLayout="HorizontalList" HeightRequest="80" SelectionMode="None">
+                                    <CollectionView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Image Source="{Binding .}" HeightRequest="80" WidthRequest="80">
+                                                <Image.GestureRecognizers>
+                                                    <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=ShowPhotoCommand}" CommandParameter="{Binding .}" />
+                                                </Image.GestureRecognizers>
+                                            </Image>
+                                        </DataTemplate>
+                                    </CollectionView.ItemTemplate>
+                                    <CollectionView.Triggers>
+                                        <DataTrigger TargetType="CollectionView" Binding="{Binding FieldType}" Value="Photo">
+                                            <Setter Property="IsVisible" Value="True" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="CollectionView" Binding="{Binding FieldType}" Value="Text">
+                                            <Setter Property="IsVisible" Value="False" />
+                                        </DataTrigger>
+                                    </CollectionView.Triggers>
+                                </CollectionView>
+                            </StackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </StackLayout>
+            <Button Text="Cloud Sync" x:Name="CloudSyncButton" Clicked="OnCloudSyncClicked" Margin="0,10,0,10" />
+            <StackLayout>
+                <Label Text="Photos:" FontAttributes="Bold" FontSize="16" />
+                <CollectionView ItemsSource="{Binding PhotoFilePaths}" HeightRequest="100" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Frame Padding="4" Margin="4" BorderColor="#DDD" CornerRadius="8">
+                                <Image Source="{Binding .}" HeightRequest="80" WidthRequest="80">
+                                    <Image.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding Source={x:Reference RootPage}, Path=ShowPhotoCommand}" CommandParameter="{Binding .}" />
+                                    </Image.GestureRecognizers>
+                                </Image>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </StackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Back" Priority="0" Order="Primary" Clicked="OnBackClicked" />
+    </ContentPage.ToolbarItems>
+</ContentPage> 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Photo_Job_Save_Manager.Views.AccountPage"
+             Title="Account">
+    <ContentPage.Content>
+        <VerticalStackLayout Padding="20">
+            <Label Text="Account" FontSize="32" FontAttributes="Bold" />
+            <Frame Margin="0,20,0,0" Padding="10">
+                <Label Text="User info will appear here." />
+            </Frame>
+            <Button Text="Logout" Margin="0,20,0,0" Command="{Binding LogoutCommand}" />
+        </VerticalStackLayout>
+    </ContentPage.Content>
+</ContentPage> 

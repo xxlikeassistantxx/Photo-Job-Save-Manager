@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Photo_Job_Save_Manager.Views.RegisterPage"
+             Title="Register"
+             BackgroundColor="{AppThemeBinding Light=White, Dark=#1F1F1F}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="25">
+            
+            <!-- Header -->
+            <VerticalStackLayout HorizontalOptions="Center" Spacing="10">
+                <Label Text="Create Account" 
+                       Style="{StaticResource Headline}"
+                       HorizontalOptions="Center"
+                       TextColor="{AppThemeBinding Light=#512BD4, Dark=#A78BFA}" />
+                <Label Text="Sign up for Photo Job Save Manager" 
+                       Style="{StaticResource SubHeadline}"
+                       HorizontalOptions="Center"
+                       TextColor="{AppThemeBinding Light=#666666, Dark=#CCCCCC}" />
+            </VerticalStackLayout>
+
+            <!-- Registration Form -->
+            <VerticalStackLayout Spacing="20">
+                
+                <!-- Username Entry -->
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Username" 
+                           Style="{StaticResource BodyStrong}"
+                           TextColor="{AppThemeBinding Light=#333333, Dark=#FFFFFF}" />
+                    <Entry x:Name="UsernameEntry"
+                           Placeholder="Enter your username"
+                           Text="{Binding Username}"
+                           ReturnType="Next"
+                           Completed="OnUsernameCompleted" />
+                </VerticalStackLayout>
+
+                <!-- Email Entry -->
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Email" 
+                           Style="{StaticResource BodyStrong}"
+                           TextColor="{AppThemeBinding Light=#333333, Dark=#FFFFFF}" />
+                    <Entry x:Name="EmailEntry"
+                           Placeholder="Enter your email"
+                           Text="{Binding Email}"
+                           Keyboard="Email"
+                           ReturnType="Next"
+                           Completed="OnEmailCompleted" />
+                </VerticalStackLayout>
+
+                <!-- Password Entry -->
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Password" 
+                           Style="{StaticResource BodyStrong}"
+                           TextColor="{AppThemeBinding Light=#333333, Dark=#FFFFFF}" />
+                    <Entry x:Name="PasswordEntry"
+                           Placeholder="Enter your password"
+                           Text="{Binding Password}"
+                           IsPassword="True"
+                           ReturnType="Next"
+                           Completed="OnPasswordCompleted" />
+                    
+                    <!-- Password Requirements -->
+                    <Label Text="Password must be 8-17 characters with 1 uppercase, 1 number, and 1 special character"
+                           Style="{StaticResource Caption}"
+                           TextColor="{AppThemeBinding Light=#666666, Dark=#CCCCCC}"
+                           Margin="0,5,0,0" />
+                </VerticalStackLayout>
+
+                <!-- Confirm Password Entry -->
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Confirm Password" 
+                           Style="{StaticResource BodyStrong}"
+                           TextColor="{AppThemeBinding Light=#333333, Dark=#FFFFFF}" />
+                    <Entry x:Name="ConfirmPasswordEntry"
+                           Placeholder="Confirm your password"
+                           Text="{Binding ConfirmPassword}"
+                           IsPassword="True"
+                           ReturnType="Done"
+                           Completed="OnConfirmPasswordCompleted" />
+                </VerticalStackLayout>
+
+                <!-- Message Display -->
+                <Frame IsVisible="{Binding IsMessageVisible}"
+                       BackgroundColor="{Binding IsSuccessMessage, Converter={StaticResource BoolToColorConverter}}"
+                       Padding="15"
+                       CornerRadius="8"
+                       Margin="0,10,0,0">
+                    <Label Text="{Binding Message}"
+                           TextColor="White"
+                           HorizontalOptions="Center" />
+                </Frame>
+
+                <!-- Register Button -->
+                <Button Text="Create Account"
+                        Command="{Binding RegisterCommand}"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
+                        BackgroundColor="{AppThemeBinding Light=#512BD4, Dark=#A78BFA}"
+                        TextColor="White"
+                        CornerRadius="8"
+                        HeightRequest="50"
+                        FontAttributes="Bold" />
+
+                <!-- Loading Indicator -->
+                <ActivityIndicator IsVisible="{Binding IsBusy}"
+                                  IsRunning="{Binding IsBusy}"
+                                  Color="{AppThemeBinding Light=#512BD4, Dark=#A78BFA}"
+                                  HorizontalOptions="Center" />
+
+            </VerticalStackLayout>
+
+            <!-- Back to Login -->
+            <Button Text="Already have an account? Sign In"
+                    Command="{Binding BackToLoginCommand}"
+                    BackgroundColor="Transparent"
+                    TextColor="{AppThemeBinding Light=#512BD4, Dark=#A78BFA}"
+                    FontAttributes="None"
+                    HorizontalOptions="Center" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage> 

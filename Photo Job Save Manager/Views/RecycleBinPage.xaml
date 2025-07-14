@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Photo_Job_Save_Manager.Views.RecycleBinPage"
+             Title="Recycle Bin">
+    <ContentPage.Content>
+        <VerticalStackLayout Padding="20">
+            <Label Text="Recycle Bin" FontSize="32" FontAttributes="Bold" />
+            <Button Text="Clean Recycle Bin" Command="{Binding CleanRecycleBinCommand}" Margin="0,20,0,0" />
+            <CollectionView ItemsSource="{Binding Entries}" Margin="0,20,0,0">
+                <CollectionView.EmptyView>
+                    <Label Text="Recycle bin is empty." HorizontalOptions="Center" VerticalOptions="Center" />
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Margin="0,5" Padding="10" BorderColor="#ccc" CornerRadius="8">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Type}" FontAttributes="Bold" FontSize="18" />
+                                <Label Text="{Binding DeletedAt, StringFormat='Deleted: {0:g}'}" FontSize="14" />
+                                <Label Text="{Binding DeletedJobType.Name}" FontSize="16" IsVisible="{Binding Type, Converter={StaticResource JobTypeVisibilityConverter}}" />
+                                <Label Text="{Binding DeletedJob.JobTypeId}" FontSize="16" IsVisible="{Binding Type, Converter={StaticResource JobVisibilityConverter}}" />
+                                <HorizontalStackLayout>
+                                    <Button Text="Restore" Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RestoreEntryCommand}" CommandParameter="{Binding}" />
+                                    <Button Text="Delete Permanently" Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteEntryCommand}" CommandParameter="{Binding}" BackgroundColor="Red" TextColor="White" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ContentPage.Content>
+</ContentPage> 

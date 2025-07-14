@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Photo_Job_Save_Manager.Views.LoginPage"
+             Title="Login"
+             BackgroundColor="{AppThemeBinding Light=White, Dark=#1F1F1F}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="25">
+            
+            <!-- App Logo/Title -->
+            <VerticalStackLayout HorizontalOptions="Center" Spacing="10">
+                <Image Source="dotnet_bot.png" 
+                       HeightRequest="120" 
+                       WidthRequest="120"
+                       Aspect="AspectFit"
+                       HorizontalOptions="Center" />
+                <Label Text="Photo Job Save Manager" 
+                       Style="{StaticResource Headline}"
+                       HorizontalOptions="Center"
+                       TextColor="{AppThemeBinding Light=#512BD4, Dark=#A78BFA}" />
+                <Label Text="Sign in to your account" 
+                       Style="{StaticResource SubHeadline}"
+                       HorizontalOptions="Center"
+                       TextColor="{AppThemeBinding Light=#666666, Dark=#CCCCCC}" />
+            </VerticalStackLayout>
+
+            <!-- Login Form -->
+            <VerticalStackLayout Spacing="20">
+                
+                <!-- Email Entry -->
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Email" 
+                           Style="{StaticResource BodyStrong}"
+                           TextColor="{AppThemeBinding Light=#333333, Dark=#FFFFFF}" />
+                    <Entry x:Name="EmailEntry"
+                           Placeholder="Enter your email"
+                           Text="{Binding Email}"
+                           Keyboard="Email"
+                           ReturnType="Next"
+                           Completed="OnEmailCompleted" />
+                </VerticalStackLayout>
+
+                <!-- Password Entry -->
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Password" 
+                           Style="{StaticResource BodyStrong}"
+                           TextColor="{AppThemeBinding Light=#333333, Dark=#FFFFFF}" />
+                    <Entry x:Name="PasswordEntry"
+                           Placeholder="Enter your password"
+                           Text="{Binding Password}"
+                           IsPassword="True"
+                           ReturnType="Done"
+                           Completed="OnPasswordCompleted" />
+                </VerticalStackLayout>
+
+                <!-- Message Display -->
+                <Frame IsVisible="{Binding IsMessageVisible}"
+                       BackgroundColor="{Binding IsSuccessMessage, Converter={StaticResource BoolToColorConverter}}"
+                       Padding="15"
+                       CornerRadius="8"
+                       Margin="0,10,0,0">
+                    <Label Text="{Binding Message}"
+                           TextColor="White"
+                           HorizontalOptions="Center" />
+                </Frame>
+
+                <!-- Resend Verification Email Button -->
+                <Button Text="Resend Verification Email"
+                        IsVisible="{Binding ShowResendVerification}"
+                        Command="{Binding ResendVerificationCommand}"
+                        BackgroundColor="{AppThemeBinding Light=#512BD4, Dark=#A78BFA}"
+                        TextColor="White"
+                        CornerRadius="8"
+                        HeightRequest="44"
+                        FontAttributes="Bold"
+                        Margin="0,0,0,0" />
+
+                <!-- Login Button -->
+                <Button Text="Sign In"
+                        Command="{Binding LoginCommand}"
+                        IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBoolConverter}}"
+                        BackgroundColor="{AppThemeBinding Light=#512BD4, Dark=#A78BFA}"
+                        TextColor="White"
+                        CornerRadius="8"
+                        HeightRequest="50"
+                        FontAttributes="Bold" />
+
+                <!-- Loading Indicator -->
+                <ActivityIndicator IsVisible="{Binding IsBusy}"
+                                  IsRunning="{Binding IsBusy}"
+                                  Color="{AppThemeBinding Light=#512BD4, Dark=#A78BFA}"
+                                  HorizontalOptions="Center" />
+
+            </VerticalStackLayout>
+
+            <!-- Additional Options -->
+            <VerticalStackLayout Spacing="15">
+                
+                <!-- Register Link -->
+                <Button Text="Don't have an account? Register"
+                        Command="{Binding RegisterCommand}"
+                        BackgroundColor="Transparent"
+                        TextColor="{AppThemeBinding Light=#512BD4, Dark=#A78BFA}"
+                        FontAttributes="None"
+                        HorizontalOptions="Center" />
+
+                <!-- Forgot Password Link -->
+                <Button Text="Forgot Password?"
+                        Command="{Binding ForgotPasswordCommand}"
+                        BackgroundColor="Transparent"
+                        TextColor="{AppThemeBinding Light=#666666, Dark=#CCCCCC}"
+                        FontAttributes="None"
+                        HorizontalOptions="Center" />
+
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage> 

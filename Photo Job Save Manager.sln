@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36221.1 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Photo Job Save Manager", "Photo Job Save Manager\Photo Job Save Manager.csproj", "{2A78F5D4-3A33-49DF-A411-B7024CBFC8F5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2A78F5D4-3A33-49DF-A411-B7024CBFC8F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A78F5D4-3A33-49DF-A411-B7024CBFC8F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A78F5D4-3A33-49DF-A411-B7024CBFC8F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A78F5D4-3A33-49DF-A411-B7024CBFC8F5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {95DE1A9D-B9C6-465D-BC0B-7180EAD0D20A}
+	EndGlobalSection
+EndGlobal
