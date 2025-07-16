@@ -21,8 +21,10 @@ namespace Photo_Job_Save_Manager.ViewModels
             DeleteJobTypeCommand = new Command<JobType>(async (jobType) => await DeleteJobTypeAsync(jobType));
             CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Default.Register<JobTypeCreatedMessage>(this, (r, m) =>
             {
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] JobTypesViewModel: Received JobTypeCreatedMessage for '{m.JobType.Name}'");
                 JobTypes.Add(m.JobType);
                 SaveJobTypesToStorage();
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] JobTypesViewModel: JobTypes count after adding: {JobTypes.Count}");
             });
         }
 
@@ -79,8 +81,12 @@ namespace Photo_Job_Save_Manager.ViewModels
             {
                 var json = JsonSerializer.Serialize(JobTypes);
                 Preferences.Set("job_types", json);
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] JobTypesViewModel: Saved {JobTypes.Count} job types to storage");
             }
-            catch { /* ignore */ }
+            catch (Exception ex) 
+            { 
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] JobTypesViewModel: Error saving job types: {ex.Message}");
+            }
         }
 
         private void LoadJobTypesFromStorage()
@@ -95,11 +101,45 @@ namespace Photo_Job_Save_Manager.ViewModels
                     {
                         JobTypes.Clear();
                         foreach (var jt in types)
+                        {
+                            // Ensure backward compatibility: add Name field if it doesn't exist
+                            var nameField = jt.Fields.FirstOrDefault(f => f.Name == "Name");
+                            if (nameField == null)
+                            {
+                                // Add Name field as the first field
+                                var newNameField = new JobTypeField
+                                {
+                                    Name = "Name",
+                                    IsRequired = true,
+                                    FieldType = JobFieldType.Text
+                                };
+                                jt.Fields.Insert(0, newNameField);
+                                System.Diagnostics.Debug.WriteLine($"[DEBUG] Added Name field to existing job type: {jt.Name}");
+                            }
+                            else
+                            {
+                                // Ensure existing Name field is required
+                                nameField.IsRequired = true;
+                            }
+                            
                             JobTypes.Add(jt);
+                        }
+                        
+                        // Save back to storage with updated job types
+                        SaveJobTypesToStorage();
+                        
+                        System.Diagnostics.Debug.WriteLine($"[DEBUG] JobTypesViewModel: Loaded {JobTypes.Count} job types from storage: {string.Join(", ", JobTypes.Select(jt => jt.Name))}");
                     }
                 }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("[DEBUG] JobTypesViewModel: No job types found in storage");
+                }
             }
-            catch { /* ignore */ }
+            catch (Exception ex) 
+            { 
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] JobTypesViewModel: Error loading job types: {ex.Message}");
+            }
         }
     }
 } 

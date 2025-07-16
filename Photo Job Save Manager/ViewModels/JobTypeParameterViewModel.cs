@@ -25,7 +25,16 @@ namespace Photo_Job_Save_Manager.ViewModels
             SaveCommand = new Command(async () => await SaveAsync());
             AddAllowedValueCommand = new Command<JobTypeField>(AddAllowedValue);
             RemoveAllowedValueCommand = new Command<string>(RemoveAllowedValue);
-            // Start with one field by default
+            
+            // Always start with a "Name" field as the first field (required)
+            Fields.Add(new JobTypeField 
+            { 
+                Name = "Name", 
+                IsRequired = true, 
+                FieldType = JobFieldType.Text 
+            });
+            
+            // Add one additional field by default
             Fields.Add(new JobTypeField { Name = "", IsRequired = false });
         }
 
@@ -36,8 +45,13 @@ namespace Photo_Job_Save_Manager.ViewModels
 
         private void RemoveField(JobTypeField field)
         {
-            if (Fields.Contains(field))
+            // Don't allow removing the Name field (first field)
+            if (Fields.Contains(field) && field.Name != "Name")
                 Fields.Remove(field);
+            else if (field.Name == "Name")
+            {
+                Application.Current.MainPage.DisplayAlert("Cannot Remove", "The 'Name' field is required and cannot be removed.", "OK");
+            }
         }
 
         private void AddAllowedValue(JobTypeField field)
@@ -78,6 +92,25 @@ namespace Photo_Job_Save_Manager.ViewModels
                 var fieldNames = string.Join(", ", dropdownFieldsWithoutValues.Select(f => f.Name));
                 await Application.Current.MainPage.DisplayAlert("Validation Error", $"Dropdown fields must have at least one allowed value: {fieldNames}", "OK");
                 return;
+            }
+            
+            // Ensure Name field is first and required
+            var nameField = Fields.FirstOrDefault(f => f.Name == "Name");
+            if (nameField == null)
+            {
+                // Add Name field if it somehow doesn't exist
+                nameField = new JobTypeField 
+                { 
+                    Name = "Name", 
+                    IsRequired = true, 
+                    FieldType = JobFieldType.Text 
+                };
+                Fields.Insert(0, nameField);
+            }
+            else
+            {
+                // Ensure Name field is required
+                nameField.IsRequired = true;
             }
             
             // Send new job type to listeners

@@ -9,6 +9,7 @@
             <Frame Margin="0,20,0,0" Padding="10">
                 <Label Text="User info will appear here." />
             </Frame>
+            <Button Text="Test Firebase Connectivity" Margin="0,20,0,0" Command="{Binding TestFirebaseConnectivityCommand}" />
             <Button Text="Logout" Margin="0,20,0,0" Command="{Binding LogoutCommand}" />
         </VerticalStackLayout>
     </ContentPage.Content>

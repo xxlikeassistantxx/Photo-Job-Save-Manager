@@ -25,6 +25,7 @@
     <TabBar Route="MainDashboardPage">
         <ShellContent Title="Job Types" ContentTemplate="{DataTemplate views:JobTypesPage}" />
         <ShellContent Title="Saved Jobs" ContentTemplate="{DataTemplate views:SavedJobsPage}" />
+        <ShellContent Title="Cloud Storage" ContentTemplate="{DataTemplate views:CloudStoragePage}" Icon="tab_cloud.png" />
         <ShellContent Title="Account" ContentTemplate="{DataTemplate views:AccountPage}" />
         <ShellContent Title="Recycle Bin" ContentTemplate="{DataTemplate views:RecycleBinPage}" Icon="tab_trash.png" />
     </TabBar>

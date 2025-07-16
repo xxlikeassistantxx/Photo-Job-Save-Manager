@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1021759232753",
+    "project_id": "photo-job-manager",
+    "storage_bucket": "photo-job-manager.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1021759232753:android:521bdc113e37c842eae750",
+        "android_client_info": {
+          "package_name": "com.company.photomanagerapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1021759232753-glcofi4hpt6i0jjis09t7te3lu1enk6f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfA8aG8FZQwddu7ikKta-PKqWyimW-uxQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1021759232753-glcofi4hpt6i0jjis09t7te3lu1enk6f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+} 

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Photo_Job_Save_Manager.Views.CloudStoragePage"
+             x:Name="RootPage"
+             Title="Cloud Storage">
+    <ContentPage.Content>
+        <VerticalStackLayout Padding="20" Spacing="16">
+            <Label Text="Cloud Storage" FontSize="32" FontAttributes="Bold" />
+            
+            <!-- Status and Refresh Section -->
+            <HorizontalStackLayout Spacing="10">
+                <Button Text="Refresh" 
+                        Command="{Binding RefreshCommand}" 
+                        IsEnabled="{Binding IsRefreshing, Converter={StaticResource InverseBoolConverter}}"
+                        BackgroundColor="Blue"
+                        TextColor="White"
+                        CornerRadius="4"
+                        Padding="12,6" />
+                <ActivityIndicator IsVisible="{Binding IsRefreshing}" 
+                                   IsRunning="{Binding IsRefreshing}" 
+                                   VerticalOptions="Center" />
+            </HorizontalStackLayout>
+            
+            <!-- Status Message -->
+            <Label Text="{Binding StatusMessage}" 
+                   FontSize="14" 
+                   TextColor="Gray"
+                   Margin="0,0,0,10" />
+            
+            <!-- Cloud Jobs List -->
+            <CollectionView ItemsSource="{Binding CloudJobs}" SelectionMode="Single">
+                <CollectionView.EmptyView>
+                    <StackLayout Padding="20" VerticalOptions="Center">
+                        <Label Text="No jobs in cloud storage." 
+                               HorizontalOptions="Center" 
+                               VerticalOptions="Center"
+                               FontSize="16"
+                               TextColor="Gray" />
+                        <Label Text="Upload jobs from the Saved Jobs page to see them here." 
+                               HorizontalOptions="Center" 
+                               VerticalOptions="Center"
+                               FontSize="14"
+                               TextColor="LightGray"
+                               Margin="0,5,0,0" />
+                    </StackLayout>
+                </CollectionView.EmptyView>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame Margin="0,8,0,0" Padding="12" BorderColor="#DDD" CornerRadius="8" BackgroundColor="LightBlue">
+                            <VerticalStackLayout>
+                                <HorizontalStackLayout>
+                                    <VerticalStackLayout HorizontalOptions="StartAndExpand">
+                                        <!-- Show Job Name prominently -->
+                                        <HorizontalStackLayout Spacing="8">
+                                            <Label Text="☁️" FontSize="16" VerticalOptions="Center" />
+                                            <Label Text="{Binding JobName}" 
+                                                   FontAttributes="Bold" 
+                                                   FontSize="18" 
+                                                   TextColor="DarkBlue" />
+                                        </HorizontalStackLayout>
+                                        <Label Text="{Binding JobTypeName}" 
+                                               FontAttributes="Italic" 
+                                               FontSize="14"
+                                               TextColor="Gray" />
+                                        <Label Text="{Binding CreatedAt, StringFormat='Created: {0:yyyy-MM-dd HH:mm}'}" 
+                                               FontSize="12" />
+                                        
+                                        <!-- Show other field values (excluding Name) -->
+                                        <StackLayout>
+                                            <Label Text="Details:" FontAttributes="Bold" FontSize="12" />
+                                            <StackLayout BindableLayout.ItemsSource="{Binding OtherFieldData}">
+                                                <BindableLayout.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Label Text="{Binding Key}: {Binding Value}" FontSize="12" />
+                                                    </DataTemplate>
+                                                </BindableLayout.ItemTemplate>
+                                            </StackLayout>
+                                        </StackLayout>
+                                    </VerticalStackLayout>
+                                    
+                                    <!-- Action Buttons -->
+                                    <VerticalStackLayout HorizontalOptions="End" Spacing="5">
+                                        <Button Text="Download" 
+                                                Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DownloadJobCommand}" 
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="Green"
+                                                TextColor="White"
+                                                CornerRadius="4"
+                                                Padding="12,6"
+                                                FontSize="12" />
+                                        <Button Text="Delete from Cloud"
+                                                Command="{Binding Source={x:Reference RootPage}, Path=BindingContext.DeleteFromCloudCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="Red"
+                                                TextColor="White"
+                                                CornerRadius="4"
+                                                Padding="12,6"
+                                                FontSize="12" />
+                                    </VerticalStackLayout>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            
+            <!-- Help Text -->
+            <StackLayout Margin="0,20,0,0" Padding="10" BackgroundColor="LightGray" >
+                <Label Text="💡 Tip:" FontAttributes="Bold" FontSize="14" />
+                <Label Text="• Download jobs to save them locally on your device" FontSize="12" />
+                <Label Text="• Use the Saved Jobs page to upload jobs to the cloud" FontSize="12" />
+                <Label Text="• Cloud storage keeps your jobs safe and accessible from any device" FontSize="12" />
+            </StackLayout>
+        </VerticalStackLayout>
+    </ContentPage.Content>
+</ContentPage> 

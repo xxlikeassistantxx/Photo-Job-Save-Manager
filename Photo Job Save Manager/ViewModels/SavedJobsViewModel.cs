@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Messaging;
 using Photo_Job_Save_Manager.ViewModels;
 using Microsoft.Maui.Storage;
 using System.Text.Json;
+using System.Windows.Input;
 
 namespace Photo_Job_Save_Manager.ViewModels
 {
@@ -32,6 +33,21 @@ namespace Photo_Job_Save_Manager.ViewModels
             }
         }
 
+        private string _jobNameSearchText = string.Empty;
+        public string JobNameSearchText
+        {
+            get => _jobNameSearchText;
+            set
+            {
+                if (SetProperty(ref _jobNameSearchText, value))
+                {
+                    FilterJobs();
+                }
+            }
+        }
+
+        public ICommand SearchCommand { get; }
+
         public string StatusFilterField { get; set; } = "Status"; // Field name to filter on (default 'Status')
         public string StatusFilter { get; set; } = string.Empty;
         public DateTime? DateCreatedStart { get; set; }
@@ -44,6 +60,8 @@ namespace Photo_Job_Save_Manager.ViewModels
         {
             System.Diagnostics.Debug.WriteLine($"[DEBUG] SavedJobsViewModel constructed. JobTypes count: {jobTypesViewModel.JobTypes.Count}");
             JobTypes = jobTypesViewModel.JobTypes;
+            SearchCommand = new Command(() => FilterJobs());
+            
             LoadJobsFromStorage();
             LoadRecycleBinFromStorage();
             CommunityToolkit.Mvvm.Messaging.WeakReferenceMessenger.Default.Register<JobSavedMessage>(this, (r, m) =>
@@ -141,33 +159,49 @@ namespace Photo_Job_Save_Manager.ViewModels
         {
             System.Diagnostics.Debug.WriteLine($"[DEBUG] FilterJobs called. AllJobs count: {AllJobs.Count}, SelectedJobType: {SelectedJobType?.Name ?? "null"}");
             FilteredJobs.Clear();
-            if (SelectedJobType == null)
-            {
-                System.Diagnostics.Debug.WriteLine("[DEBUG] No SelectedJobType, returning early from FilterJobs.");
-                return;
-            }
-            var jobsOfType = AllJobs.Where(j =>
-                j.JobTypeId.Trim().Equals(SelectedJobType.Name.Trim(), System.StringComparison.OrdinalIgnoreCase)).ToList();
-            System.Diagnostics.Debug.WriteLine($"[DEBUG] jobsOfType count: {jobsOfType.Count}");
-            foreach (var job in jobsOfType)
+            
+            // Get all jobs or filter by job type if selected
+            var jobsToFilter = SelectedJobType == null 
+                ? AllJobs.ToList()
+                : AllJobs.Where(j => j.JobTypeId.Trim().Equals(SelectedJobType.Name.Trim(), System.StringComparison.OrdinalIgnoreCase)).ToList();
+            
+            System.Diagnostics.Debug.WriteLine($"[DEBUG] jobsToFilter count: {jobsToFilter.Count}");
+            
+            foreach (var job in jobsToFilter)
             {
                 bool matches = true;
-                // Field search filters
-                foreach (var searchVm in FieldSearchTerms)
+                
+                // Job name search filter
+                if (!string.IsNullOrEmpty(JobNameSearchText))
                 {
-                    var fieldName = searchVm.FieldName;
-                    var search = searchVm.SearchText;
-                    if (!string.IsNullOrEmpty(search))
+                    var jobName = job.JobName;
+                    if (!jobName.Contains(JobNameSearchText, System.StringComparison.OrdinalIgnoreCase))
                     {
-                        if (!job.Data.TryGetValue(fieldName, out var value) || value == null ||
-                            !value.ToString().Contains(search, System.StringComparison.OrdinalIgnoreCase))
+                        System.Diagnostics.Debug.WriteLine($"[DEBUG] Job {job.Id} does not match job name search '{JobNameSearchText}'.");
+                        matches = false;
+                    }
+                }
+                
+                // Field search filters
+                if (matches)
+                {
+                    foreach (var searchVm in FieldSearchTerms)
+                    {
+                        var fieldName = searchVm.FieldName;
+                        var search = searchVm.SearchText;
+                        if (!string.IsNullOrEmpty(search))
                         {
-                            System.Diagnostics.Debug.WriteLine($"[DEBUG] Job {job.Id} does not match field '{fieldName}' with search '{search}'.");
-                            matches = false;
-                            break;
+                            if (!job.Data.TryGetValue(fieldName, out var value) || value == null ||
+                                !value.ToString().Contains(search, System.StringComparison.OrdinalIgnoreCase))
+                            {
+                                System.Diagnostics.Debug.WriteLine($"[DEBUG] Job {job.Id} does not match field '{fieldName}' with search '{search}'.");
+                                matches = false;
+                                break;
+                            }
                         }
                     }
                 }
+                
                 // Status filter (generic: filter by any field name)
                 if (matches && !string.IsNullOrEmpty(StatusFilter))
                 {
@@ -178,6 +212,7 @@ namespace Photo_Job_Save_Manager.ViewModels
                         matches = false;
                     }
                 }
+                
                 // Date range filter
                 if (matches && DateCreatedStart.HasValue)
                 {
@@ -189,6 +224,7 @@ namespace Photo_Job_Save_Manager.ViewModels
                     if (job.CreatedAt > DateCreatedEnd.Value)
                         matches = false;
                 }
+                
                 if (matches)
                 {
                     System.Diagnostics.Debug.WriteLine($"[DEBUG] Job {job.Id} matches all search terms, adding to FilteredJobs.");

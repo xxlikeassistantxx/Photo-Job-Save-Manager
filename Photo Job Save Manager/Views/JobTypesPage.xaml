@@ -8,6 +8,9 @@
             <Label Text="Job Types" FontSize="32" FontAttributes="Bold" />
             <Button Text="Add Job Type" Margin="0,20,0,0" Command="{Binding AddJobTypeCommand}" />
             <CollectionView ItemsSource="{Binding JobTypes}" Margin="0,20,0,0" SelectionMode="Single" SelectionChanged="OnJobTypeSelected">
+                <CollectionView.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnJobTypeTapped" />
+                </CollectionView.GestureRecognizers>
                 <CollectionView.EmptyView>
                     <Label Text="No job types yet." HorizontalOptions="Center" VerticalOptions="Center" />
                 </CollectionView.EmptyView>
@@ -23,14 +26,20 @@
                                     <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="20" />
                                     <Label Text="{Binding Fields.Count, StringFormat='Fields: {0}'}" FontSize="14" />
                                 </VerticalStackLayout>
-                                <Button Grid.Column="1" 
-                                        Text="Delete" 
-                                        BackgroundColor="Red" 
-                                        TextColor="White"
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteJobTypeCommand}"
-                                        CommandParameter="{Binding}"
-                                        Margin="10,0,0,0"
-                                        Padding="10,5" />
+                                <StackLayout Grid.Column="1" Orientation="Horizontal" Spacing="5">
+                                    <Button Text="Add Job" 
+                                            BackgroundColor="Green" 
+                                            TextColor="White"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AddJobCommand}"
+                                            CommandParameter="{Binding}"
+                                            Padding="10,5" />
+                                    <Button Text="Delete" 
+                                            BackgroundColor="Red" 
+                                            TextColor="White"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.DeleteJobTypeCommand}"
+                                            CommandParameter="{Binding}"
+                                            Padding="10,5" />
+                                </StackLayout>
                             </Grid>
                         </Frame>
                     </DataTemplate>

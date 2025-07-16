@@ -7,6 +7,15 @@
     <ContentPage.Content>
         <VerticalStackLayout Padding="20" Spacing="16">
             <Label Text="Saved Jobs" FontSize="32" FontAttributes="Bold" />
+            
+            <!-- Search Bar for Job Names -->
+            <SearchBar Placeholder="Search jobs by name..." 
+                       Text="{Binding JobNameSearchText, Mode=TwoWay}"
+                       TextChanged="OnJobNameSearchChanged"
+                       SearchCommand="{Binding SearchCommand}"
+                       BackgroundColor="LightGray"
+                       Margin="0,0,0,10" />
+            
             <!-- Job Type Picker -->
             <Picker Title="Select Job Type"
                     ItemsSource="{Binding JobTypes}"
@@ -47,12 +56,20 @@
                             <VerticalStackLayout>
                                 <HorizontalStackLayout>
                                     <VerticalStackLayout HorizontalOptions="StartAndExpand">
-                                        <Label Text="{Binding JobTypeId}" FontAttributes="Bold" />
+                                        <!-- Show Job Name prominently -->
+                                        <Label Text="{Binding JobName}" 
+                                               FontAttributes="Bold" 
+                                               FontSize="18" 
+                                               TextColor="Blue" />
+                                        <Label Text="{Binding JobTypeName}" 
+                                               FontAttributes="Italic" 
+                                               FontSize="14"
+                                               TextColor="Gray" />
                                         <Label Text="{Binding CreatedAt, StringFormat='Created: {0:yyyy-MM-dd HH:mm}'}" FontSize="12" />
-                                        <!-- Show all field values -->
+                                        <!-- Show other field values (excluding Name) -->
                                         <StackLayout>
-                                            <Label Text="Fields:" FontAttributes="Bold" FontSize="12" />
-                                            <StackLayout BindableLayout.ItemsSource="{Binding Data}">
+                                            <Label Text="Details:" FontAttributes="Bold" FontSize="12" />
+                                            <StackLayout BindableLayout.ItemsSource="{Binding OtherFieldData}">
                                                 <BindableLayout.ItemTemplate>
                                                     <DataTemplate>
                                                         <Label Text="{Binding Key}: {Binding Value}" FontSize="12" />
@@ -61,24 +78,34 @@
                                             </StackLayout>
                                         </StackLayout>
                                     </VerticalStackLayout>
-                                    <Button Text="Edit" 
-                                            Command="{Binding Source={x:Reference RootPage}, Path=EditJobCommand}" 
-                                            CommandParameter="{Binding .}"
-                                            HorizontalOptions="End"
-                                            VerticalOptions="Start"
-                                            BackgroundColor="Blue"
-                                            TextColor="White"
-                                            CornerRadius="4"
-                                            Padding="12,6" />
-                                    <Button Text="Remove"
-                                            Command="{Binding Source={x:Reference RootPage}, Path=RemoveJobCommand}"
-                                            CommandParameter="{Binding .}"
-                                            HorizontalOptions="End"
-                                            VerticalOptions="Start"
-                                            BackgroundColor="Red"
-                                            TextColor="White"
-                                            CornerRadius="4"
-                                            Padding="12,6" />
+                                    
+                                    <!-- Action Buttons -->
+                                    <VerticalStackLayout HorizontalOptions="End" Spacing="5">
+                                        <Button Text="Edit" 
+                                                Command="{Binding Source={x:Reference RootPage}, Path=EditJobCommand}" 
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="Blue"
+                                                TextColor="White"
+                                                CornerRadius="4"
+                                                Padding="12,6"
+                                                FontSize="12" />
+                                        <Button Text="Upload to Cloud"
+                                                Command="{Binding Source={x:Reference RootPage}, Path=UploadToCloudCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="Green"
+                                                TextColor="White"
+                                                CornerRadius="4"
+                                                Padding="12,6"
+                                                FontSize="12" />
+                                        <Button Text="Remove"
+                                                Command="{Binding Source={x:Reference RootPage}, Path=RemoveJobCommand}"
+                                                CommandParameter="{Binding .}"
+                                                BackgroundColor="Red"
+                                                TextColor="White"
+                                                CornerRadius="4"
+                                                Padding="12,6"
+                                                FontSize="12" />
+                                    </VerticalStackLayout>
                                 </HorizontalStackLayout>
                             </VerticalStackLayout>
                         </Frame>

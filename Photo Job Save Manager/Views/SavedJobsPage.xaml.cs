@@ -29,6 +29,13 @@ namespace Photo_Job_Save_Manager.Views
             ((CollectionView)sender).SelectedItem = null;
         }
 
+        private void OnJobNameSearchChanged(object sender, TextChangedEventArgs e)
+        {
+            // This is handled automatically by the binding to JobNameSearchText in the ViewModel
+            // The TextChanged event fires and updates the binding, which triggers filtering
+            System.Diagnostics.Debug.WriteLine($"[DEBUG] Job name search changed to: {e.NewTextValue}");
+        }
+
         private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
         {
             if (sender is Entry entry && entry.BindingContext is SavedJobsViewModel.FieldSearchTermViewModel fieldVm && BindingContext is SavedJobsViewModel vm)
@@ -46,6 +53,39 @@ namespace Photo_Job_Save_Manager.Views
                 {
                     { "jobId", job.Id }
                 });
+            }
+        });
+
+        public ICommand UploadToCloudCommand => new Command<Photo_Job_Save_Manager.Models.Job>(async (job) =>
+        {
+            if (job != null)
+            {
+                try
+                {
+                    System.Diagnostics.Debug.WriteLine($"[DEBUG] UploadToCloudCommand - Uploading job: {job.JobName}");
+                    
+                    // Get the CloudStorageViewModel from the service provider
+                    var cloudStorageViewModel = App.Current.Services.GetService<CloudStorageViewModel>();
+                    if (cloudStorageViewModel != null)
+                    {
+                        await cloudStorageViewModel.UploadJobFromSavedJobs(job);
+                    }
+                    else
+                    {
+                        await Application.Current.MainPage.DisplayAlert(
+                            "Error",
+                            "Cloud storage service is not available.",
+                            "OK");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[DEBUG] UploadToCloudCommand error: {ex.Message}");
+                    await Application.Current.MainPage.DisplayAlert(
+                        "Upload Failed",
+                        $"Could not upload job to cloud: {ex.Message}",
+                        "OK");
+                }
             }
         });
 
