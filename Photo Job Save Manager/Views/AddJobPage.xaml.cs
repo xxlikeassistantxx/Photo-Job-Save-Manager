@@ -13,18 +13,27 @@ namespace Photo_Job_Save_Manager.Views
             set
             {
                 _jobTypeName = value;
-                System.Diagnostics.Debug.WriteLine($"JobTypeName property set: {_jobTypeName}");
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] AddJobPage: JobTypeName property set: {_jobTypeName}");
                 if (BindingContext is AddJobViewModel vm)
+                {
+                    System.Diagnostics.Debug.WriteLine("[DEBUG] AddJobPage: Calling vm.LoadJobType");
                     vm.LoadJobType(_jobTypeName);
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine($"[DEBUG] AddJobPage: BindingContext is not AddJobViewModel, it's: {BindingContext?.GetType().Name ?? "null"}");
+                }
             }
         }
         private string _jobTypeName;
 
         public AddJobPage(AddJobViewModel viewModel)
         {
+            System.Diagnostics.Debug.WriteLine("[DEBUG] AddJobPage: Constructor called with viewModel");
             InitializeComponent();
             BindingContext = viewModel;
             ShowPhotoCommand = new Command<string>(async (filePath) => await ShowPhotoAsync(filePath));
+            System.Diagnostics.Debug.WriteLine("[DEBUG] AddJobPage: Constructor completed");
         }
 
         public ICommand ShowPhotoCommand { get; }
@@ -37,7 +46,10 @@ namespace Photo_Job_Save_Manager.Views
             }
         }
 
-        public AddJobPage() : this(App.Current.Services.GetService<AddJobViewModel>()) { }
+        public AddJobPage() : this(App.Current.Services.GetService<AddJobViewModel>()) 
+        {
+            System.Diagnostics.Debug.WriteLine("[DEBUG] AddJobPage: Default constructor called");
+        }
 
         private async void OnBackClicked(object sender, EventArgs e)
         {

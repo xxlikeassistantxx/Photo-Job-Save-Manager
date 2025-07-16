@@ -4,6 +4,7 @@ using Photo_Job_Save_Manager.ViewModels;
 using System.Linq;
 using System.Windows.Input;
 using Photo_Job_Save_Manager.Services;
+using Microsoft.Extensions.Configuration;
 
 namespace Photo_Job_Save_Manager.Views
 {
@@ -69,15 +70,21 @@ namespace Photo_Job_Save_Manager.Views
             {
                 try
                 {
-                    // TODO: Replace with actual retrieval of authToken, userId, firebaseUrl, firebaseStorage, apiKey
+                    // Get configuration from the app
+                    var configuration = App.Current.Services.GetService<IConfiguration>();
+                    if (configuration == null)
+                    {
+                        await DisplayAlert("Cloud Sync Failed", "Configuration not available", "OK");
+                        return;
+                    }
+
+                    // TODO: Replace with actual retrieval of authToken, userId
                     string email = "your@email.com";
                     string password = "yourpassword";
-                    string apiKey = "your-firebase-api-key";
-                    string firebaseUrl = "https://<your-project-id>.firebaseio.com/";
-                    string firebaseStorage = "<your-project-id>.appspot.com";
+                    string apiKey = configuration["Firebase:ApiKey"] ?? "your-firebase-api-key";
 
                     var (authToken, userId) = await FirebaseService.AuthenticateAsync(email, password, apiKey);
-                    var firebaseService = new FirebaseService(authToken, userId, firebaseUrl);
+                    var firebaseService = new FirebaseService(authToken, userId, configuration);
                     await firebaseService.UploadJobAsync(vm.Job);
                     await DisplayAlert("Cloud Sync", "Job uploaded to cloud!", "OK");
                 }

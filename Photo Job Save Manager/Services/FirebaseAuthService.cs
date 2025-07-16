@@ -2,17 +2,24 @@ using Photo_Job_Save_Manager.Models;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace Photo_Job_Save_Manager.Services
 {
     public class FirebaseAuthService : IAuthService
     {
-        private readonly string _apiKey = "AIzaSyDYCKj1mp7GrEftKYPMnoXYrt6EwNsje6c";
-        private readonly string _projectId = "photo-job-manager";
+        private readonly string _apiKey;
+        private readonly string _projectId;
         private string? _idToken;
         private string? _refreshToken;
         private string? _localId;
         private bool _emailVerified;
+
+        public FirebaseAuthService(IConfiguration configuration)
+        {
+            _apiKey = configuration["Firebase:ApiKey"] ?? "AIzaSyBfA8aG8FZQwddu7ikKta-PKqWyimW-uxQ";
+            _projectId = configuration["Firebase:ProjectId"] ?? "photo-job-manager";
+        }
 
         public async Task<bool> IsUserLoggedInAsync()
         {
@@ -50,60 +57,71 @@ namespace Photo_Job_Save_Manager.Services
 
         public async Task<bool> LoginAsync(string email, string password)
         {
-            var url = $"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={_apiKey}";
-            var payload = new
+            try
             {
-                email = email,
-                password = password,
-                returnSecureToken = true
-            };
-            var json = JsonSerializer.Serialize(payload);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            using var client = new HttpClient();
-            var response = await client.PostAsync(url, content);
-            var responseString = await response.Content.ReadAsStringAsync();
-            if (response.IsSuccessStatusCode)
-            {
-                var result = JsonDocument.Parse(responseString);
-                _idToken = result.RootElement.GetProperty("idToken").GetString();
-                _refreshToken = result.RootElement.GetProperty("refreshToken").GetString();
-                _localId = result.RootElement.GetProperty("localId").GetString();
-
-                // Now lookup user info to check emailVerified
-                var lookupUrl = $"https://identitytoolkit.googleapis.com/v1/accounts:lookup?key={_apiKey}";
-                var lookupPayload = new { idToken = _idToken };
-                var lookupJson = JsonSerializer.Serialize(lookupPayload);
-                var lookupContent = new StringContent(lookupJson, Encoding.UTF8, "application/json");
-                var lookupResponse = await client.PostAsync(lookupUrl, lookupContent);
-                var lookupResponseString = await lookupResponse.Content.ReadAsStringAsync();
-                if (lookupResponse.IsSuccessStatusCode)
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] FirebaseAuthService: Attempting login for {email}");
+                var url = $"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={_apiKey}";
+                var payload = new
                 {
-                    var lookupResult = JsonDocument.Parse(lookupResponseString);
-                    var user = lookupResult.RootElement.GetProperty("users")[0];
-                    _emailVerified = user.GetProperty("emailVerified").GetBoolean();
-                    if (!_emailVerified)
+                    email = email,
+                    password = password,
+                    returnSecureToken = true
+                };
+                var json = JsonSerializer.Serialize(payload);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                using var client = new HttpClient();
+                var response = await client.PostAsync(url, content);
+                var responseString = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = JsonDocument.Parse(responseString);
+                    _idToken = result.RootElement.GetProperty("idToken").GetString();
+                    _refreshToken = result.RootElement.GetProperty("refreshToken").GetString();
+                    _localId = result.RootElement.GetProperty("localId").GetString();
+
+                    // Now lookup user info to check emailVerified
+                    var lookupUrl = $"https://identitytoolkit.googleapis.com/v1/accounts:lookup?key={_apiKey}";
+                    var lookupPayload = new { idToken = _idToken };
+                    var lookupJson = JsonSerializer.Serialize(lookupPayload);
+                    var lookupContent = new StringContent(lookupJson, Encoding.UTF8, "application/json");
+                    var lookupResponse = await client.PostAsync(lookupUrl, lookupContent);
+                    var lookupResponseString = await lookupResponse.Content.ReadAsStringAsync();
+                    if (lookupResponse.IsSuccessStatusCode)
                     {
-                        throw new Exception("Please verify your email address before logging in.");
+                        var lookupResult = JsonDocument.Parse(lookupResponseString);
+                        var user = lookupResult.RootElement.GetProperty("users")[0];
+                        _emailVerified = user.GetProperty("emailVerified").GetBoolean();
+                        if (!_emailVerified)
+                        {
+                            throw new Exception("Please verify your email address before logging in.");
+                        }
+                        System.Diagnostics.Debug.WriteLine($"[DEBUG] FirebaseAuthService: Login successful for {email}");
+                        return true;
                     }
-                    return true;
+                    else
+                    {
+                        throw new Exception("Failed to verify email status. Please try again.");
+                    }
                 }
                 else
                 {
-                    throw new Exception("Failed to verify email status. Please try again.");
+                    try
+                    {
+                        var error = JsonDocument.Parse(responseString).RootElement;
+                        var message = error.GetProperty("error").GetProperty("message").GetString();
+                        System.Diagnostics.Debug.WriteLine($"[DEBUG] FirebaseAuthService: Login failed for {email}: {message}");
+                        throw new Exception($"Login failed: {message}");
+                    }
+                    catch
+                    {
+                        throw new Exception("Login failed: Unknown error.");
+                    }
                 }
             }
-            else
+            catch (Exception ex)
             {
-                try
-                {
-                    var error = JsonDocument.Parse(responseString).RootElement;
-                    var message = error.GetProperty("error").GetProperty("message").GetString();
-                    throw new Exception($"Login failed: {message}");
-                }
-                catch
-                {
-                    throw new Exception("Login failed: Unknown error.");
-                }
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] FirebaseAuthService: Login exception for {email}: {ex.Message}");
+                throw;
             }
         }
 

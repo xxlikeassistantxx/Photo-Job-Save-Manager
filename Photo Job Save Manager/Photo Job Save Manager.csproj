@@ -72,14 +72,19 @@
 		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
 		<PackageReference Include="CommunityToolkit.Maui" Version="8.0.0" />
-		<PackageReference Include="Plugin.Firebase" Version="3.1.4" />
 		<PackageReference Include="FirebaseDatabase.net" Version="1.0.3" />
 		<PackageReference Include="FirebaseStorage.net" Version="1.0.3" />
 	</ItemGroup>
 
+	<ItemGroup Condition="'$(TargetPlatformIdentifier)' == 'Android'">
+		<GoogleServicesJson Include="Platforms\Android\google-services.json" />
+	</ItemGroup>
+
 	<ItemGroup Condition="'$(TargetPlatformIdentifier)' == 'iOS'">
 		<BundleResource Include="Platforms\iOS\Entitlements.plist" />
+		<BundleResource Include="Platforms\iOS\GoogleService-Info.plist" />
 	</ItemGroup>
 
 </Project>

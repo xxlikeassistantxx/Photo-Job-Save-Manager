@@ -14,29 +14,62 @@ namespace Photo_Job_Save_Manager.ViewModels
         public ICommand SaveCommand { get; }
         public string Status { get; set; } = string.Empty;
 
-        private List<JobType> _jobTypes => App.Current.Services.GetService<JobTypesViewModel>()?.JobTypes.ToList() ?? new();
+        private JobTypesViewModel? _jobTypesViewModel;
 
         public AddJobViewModel()
         {
+            System.Diagnostics.Debug.WriteLine("[DEBUG] AddJobViewModel: Constructor called");
             SaveCommand = new Command(async () => await SaveAsync());
+            // Get the JobTypesViewModel once during construction
+            _jobTypesViewModel = App.Current.Services.GetService<JobTypesViewModel>();
+            System.Diagnostics.Debug.WriteLine($"[DEBUG] AddJobViewModel: JobTypesViewModel obtained: {_jobTypesViewModel != null}");
+            if (_jobTypesViewModel != null)
+            {
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] AddJobViewModel: JobTypes count in constructor: {_jobTypesViewModel.JobTypes.Count}");
+            }
         }
 
         public void LoadJobType(string jobTypeName)
         {
-            System.Diagnostics.Debug.WriteLine($"[DEBUG] LoadJobType called with: {jobTypeName}");
-            System.Diagnostics.Debug.WriteLine($"[DEBUG] Available job types: {string.Join(", ", _jobTypes.Select(jt => jt.Name))}");
+            System.Diagnostics.Debug.WriteLine($"[DEBUG] AddJobViewModel: LoadJobType called with: {jobTypeName}");
+            
+            // Ensure we have the JobTypesViewModel
+            if (_jobTypesViewModel == null)
+            {
+                System.Diagnostics.Debug.WriteLine("[DEBUG] AddJobViewModel: JobTypesViewModel was null, getting new instance");
+                _jobTypesViewModel = App.Current.Services.GetService<JobTypesViewModel>();
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] AddJobViewModel: JobTypesViewModel was null, got new instance: {_jobTypesViewModel != null}");
+            }
+            
+            if (_jobTypesViewModel == null)
+            {
+                System.Diagnostics.Debug.WriteLine("[DEBUG] AddJobViewModel: Failed to get JobTypesViewModel from service container");
+                return;
+            }
+            
+            var jobTypes = _jobTypesViewModel.JobTypes.ToList();
+            System.Diagnostics.Debug.WriteLine($"[DEBUG] AddJobViewModel: Available job types: {string.Join(", ", jobTypes.Select(jt => jt.Name))}");
+            
             FieldEntries.Clear();
-            var jobType = _jobTypes.FirstOrDefault(j => 
+            var jobType = jobTypes.FirstOrDefault(j => 
                 j.Name.Trim().Equals(jobTypeName?.Trim(), StringComparison.OrdinalIgnoreCase));
-            System.Diagnostics.Debug.WriteLine(jobType == null ? "[DEBUG] JobType not found!" : $"[DEBUG] JobType found: {jobType.Name}");
+            
+            System.Diagnostics.Debug.WriteLine(jobType == null ? "[DEBUG] AddJobViewModel: JobType not found!" : $"[DEBUG] AddJobViewModel: JobType found: {jobType.Name}");
+            
             if (jobType != null)
             {
                 JobTypeName = jobType.Name;
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] AddJobViewModel: Setting JobTypeName to: {JobTypeName}");
                 foreach (var field in jobType.Fields)
                 {
-                    Debug.WriteLine($"[DEBUG] Adding field: {field.Name}, Type: {field.FieldType}");
+                    Debug.WriteLine($"[DEBUG] AddJobViewModel: Adding field: {field.Name}, Type: {field.FieldType}");
                     FieldEntries.Add(new FieldEntryViewModel(field));
                 }
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] AddJobViewModel: Total field entries added: {FieldEntries.Count}");
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine($"[DEBUG] AddJobViewModel: JobType '{jobTypeName}' not found in available types: {string.Join(", ", jobTypes.Select(jt => $"'{jt.Name}'"))}");
             }
         }
 
